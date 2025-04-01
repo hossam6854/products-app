@@ -3,6 +3,8 @@ import { GetServerSideProps } from "next";
 import ProductForm from "@/components/ProductForm";
 import type { Product } from "@/types/product";
 import { useState } from "react";
+import { useRouter } from "next/router";
+import Toast from "@/components/Toast";
 
 interface EditProductPageProps {
   product: Product;
@@ -21,6 +23,8 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
 export default function EditProductPage({ product }: EditProductPageProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (updatedProduct: Product) => {
     setIsSubmitting(true);
@@ -36,9 +40,17 @@ export default function EditProductPage({ product }: EditProductPageProps) {
         }
       );
 
-      if (!res.ok) {
+      if (res.ok) {
+        setShowSuccess(true);
+        setTimeout(() => {
+          router.push(`/products/${product.id}`);
+        }, 1500);
+      } else {
         throw new Error("Failed to update product");
       }
+    } catch (error) {
+      console.error("Edit product error:", error);
+      alert("Failed to update product. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -54,13 +66,21 @@ export default function EditProductPage({ product }: EditProductPageProps) {
         />
       </Head>
 
+      {showSuccess && (
+        <Toast 
+          message="Product updated successfully!" 
+          type="success" 
+          onClose={() => setShowSuccess(false)}
+        />
+      )}
+
       <ProductForm
         initialData={product}
         onSubmit={handleSubmit as (product: Product | FormData) => Promise<void>}
         isSubmitting={isSubmitting}
         formTitle="Edit Product"
         submitButtonText="Update Product"
-        successMessage="Product updated successfully!"
+        pageType="edit"
       />
     </>
   );

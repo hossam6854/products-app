@@ -7,7 +7,6 @@ import {
   FiDollarSign,
 } from "react-icons/fi";
 import { useRouter } from "next/router";
-import Toast from "@/components/Toast";
 import Loader from "@/components/Loader";
 import type { Product } from "@/types/product";
 import Image from "next/image";
@@ -20,30 +19,28 @@ interface ProductFormProps {
   submitButtonText: string;
   successMessage?: string;
   showBackButton?: boolean;
+  pageType?: "new" | "edit";
 }
 
 export default function ProductForm({
   initialData = {
-    id: 0,
     title: "",
-    description: "",
     price: 0,
-    image: "",
+    description: "",
     category: "",
-    rating: { rate: 0, count: 0 },
+    image: "",
   },
   onSubmit,
   isSubmitting,
   formTitle,
   submitButtonText,
-  successMessage,
   showBackButton = true,
+  pageType,
 }: ProductFormProps) {
   const router = useRouter();
   const [product, setProduct] = useState<Product>(initialData);
   const [imagePreview, setImagePreview] = useState(initialData.image || "");
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -59,7 +56,8 @@ export default function ProductForm({
       newErrors.description = "Description is required";
     if (product.price <= 0) newErrors.price = "Price must be greater than 0";
     if (!product.category) newErrors.category = "Category is required";
-    if (!imagePreview && !imageFile && !product.image) newErrors.image = "Image is required";
+    if (!imagePreview && !imageFile && !product.image)
+      newErrors.image = "Image is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -127,11 +125,6 @@ export default function ProductForm({
         // Regular JSON payload for URL-based image
         await onSubmit(product);
       }
-
-      if (successMessage) {
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 3000);
-      }
     } catch (error) {
       console.error("Form submission error:", error);
       setErrors((prev) => ({
@@ -152,9 +145,12 @@ export default function ProductForm({
     <div className="max-w-4xl mx-auto p-4 sm:p-6">
       {showBackButton && (
         <button
-          onClick={() => router.push("/")}
-          className="inline-flex items-center text-sm mb-6 font-medium text-gray-700 hover:text-blue-600">
-          <FiArrowLeft /> Back to Products
+          onClick={() =>
+            pageType === "edit" ? router.back() : router.push("/")
+          }
+          className="inline-flex items-center text-sm mb-6 font-medium text-gray-700 hover:text-blue-600"
+        >
+          <FiArrowLeft /> {pageType === "edit" ? "Back" : "Back to products"}
         </button>
       )}
 
@@ -385,14 +381,6 @@ export default function ProductForm({
           </form>
         </div>
       </div>
-
-      {showSuccess && successMessage && (
-        <Toast
-          message={successMessage}
-          type="success"
-          onClose={() => setShowSuccess(false)}
-        />
-      )}
     </div>
   );
 }

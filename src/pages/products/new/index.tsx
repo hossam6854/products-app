@@ -71,7 +71,7 @@ export default function CreateProductPage() {
         isSubmitting={isSubmitting}
         formTitle="Add New Product"
         submitButtonText="Create Product"
-        successMessage="Product created successfully!"
+        pageType="new"
       />
     </>
   );
