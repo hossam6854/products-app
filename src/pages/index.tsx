@@ -59,7 +59,7 @@ export default function Products({ products }: ProductsPageProps) {
       
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-center mb-2">Our Products</h1>
-        <p className="text-center text-gray-600 mb-8">Find exactly what you're looking for</p>
+        <p className="text-center text-gray-600 mb-8">Find exactly what you&apos;re looking for</p>
         
         {/* Search and Filter Bar */}
         <div className="mb-8">
@@ -170,7 +170,7 @@ export default function Products({ products }: ProductsPageProps) {
           <div className="text-center py-12">
             <h3 className="text-xl font-medium text-gray-700 mb-2">No products found</h3>
             <p className="text-gray-500">
-              Try adjusting your search or filter to find what you're looking for.
+              Try adjusting your search or filter to find what you&apos;re looking for.
             </p>
             <button
               onClick={clearFilters}
